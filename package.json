@@ -9,26 +9,25 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "server": "tsx watch ./src/api/server.ts"
-
-  
-    
   },
-
-  "prisma":{
-    "schema":"src/api/database/prisma/schema.prisma"
+  "prisma": {
+    "schema": "src/api/database/prisma/schema.prisma"
   },
-
   "dependencies": {
     "@blueprintjs/core": "^5.8.1",
     "@blueprintjs/icons": "^5.7.0",
     "@prisma/client": "5.8.1",
     "@tauri-apps/api": "^1.5.2",
+    "@types/cors": "^2.8.17",
     "axios": "^1.6.5",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.2",
     "express": "^4.18.2",
     "prisma": "^5.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "ts-node-dev": "^2.0.0"
+    "ts-node-dev": "^2.0.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.8",

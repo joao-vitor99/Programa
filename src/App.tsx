@@ -1,56 +1,56 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/tauri";
-import "./App.css";
 
-import{Button, Spinner} from "@blueprintjs/core"
+import { Button, Spinner } from "@blueprintjs/core";
+import { CSSProperties, useState } from "react";
+import axios from "axios"
+
+const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem"
+  }
+}
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
+  const [nome, setNome] = useState("")
+  const [phone, setPhone] = useState("")
+
+  const createClient = async (name: string, phone: string) => {
+    try {
+      const client = await axios.post("http://localhost:3001/clients", {
+        name: name,
+        phone: phone,
+      })
+      return client
+    } catch (error) { console.error(error) }
+
+
+
   }
 
   return (
-    <div className="container">
+    <div style={styles.container as CSSProperties}>
       <h1>Welcome to Tauri!</h1>
 
-      <Spinner intent="primary" />
-      <Button intent="primary"> teste </Button>
+      {/* <Spinner intent="primary" /> */}
 
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
+      <input type="text" className="bp5-input" placeholder="nome" onChange={(evt) => {
+        setNome(evt.target.value)
+      }} />
 
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+      <input type="text" className="bp5-input" placeholder="phone" onChange={(evt) => {
+        setPhone(evt.target.value)
+      }} />
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
+      <Button
+        intent="success"
+        onClick={async () => {
+          const response = await createClient(nome, phone)
+          console.log(response?.data)
         }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
+      >Criar cliente</Button>
 
-      <p>{greetMsg}</p>
     </div>
   );
 }
