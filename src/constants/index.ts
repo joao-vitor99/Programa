@@ -1,2 +1,3 @@
 import HttpStatusCode from "./HTTPStatusCode.enum";
-export{HttpStatusCode}
+import {ROUTES} from "./routes"
+export{HttpStatusCode, ROUTES}
