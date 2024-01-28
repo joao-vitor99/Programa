@@ -1,18 +1,18 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "./constants";
 import { Home } from "./screens/Home";
-import { Client } from "./screens/Client";
+import { Clients } from "./screens/Clients";
 
 function App() {
   const router = createBrowserRouter([
     {
       path: ROUTES.HOME,
-      element: <Home />
+      element: <Home />,
+      children: [{
+        path: ROUTES.CLIENTS,
+        element: <Clients />
+      }]
     },
-    {
-      path: ROUTES.CLIENTS,
-      element: <Client />
-    }
 
   ])
 
