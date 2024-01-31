@@ -1,17 +1,22 @@
-import { Cell, Column, Table2 } from "@blueprintjs/table";
+import { Client } from "@prisma/client";
+import { CustomTable, Table, TableHeader } from "../Table";
 
-export const Read = () => {
-  const dollarCellRenderer = (rowIndex: number) => (
-    <Cell>{`$${(rowIndex * 10).toFixed(2)}`}</Cell>
-  );
-  const euroCellRenderer = (rowIndex: number) => (
-    <Cell>{`€${(rowIndex * 10 * 0.85).toFixed(2)}`}</Cell>
-  );
+export const Read = ({ clients }: any) => {
+  const tableHeader: TableHeader<Client>[] = [
+    {
+      render: (row) => row?.name,
+      label: "Nome",
+    },
+    {
+      render: (row) => row?.phone,
+      label: "Telefone",
+    },
+  ];
 
-  return (
-    <Table2 numRows={10}>
-      <Column name="Dollars" cellRenderer={dollarCellRenderer} />
-      <Column name="Euros" cellRenderer={euroCellRenderer} />
-    </Table2>
-  );
+  const tableData: Table<Client> = {
+    header: tableHeader,
+    content: clients,
+  };
+
+  return <CustomTable content={tableData.content} header={tableData.header} />;
 };
