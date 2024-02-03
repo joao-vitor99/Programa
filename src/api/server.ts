@@ -1,25 +1,30 @@
-import express from "express"
-import { ClientRouter } from "./routes"
-import dotenv from "dotenv"
-import cors from "cors"
+import express from "express";
+import { ClientRouter } from "./routes";
+import dotenv from "dotenv";
+import cors from "cors";
+import morgan from "morgan";
 
-dotenv.config()
+dotenv.config();
 
-const app = express()
+const app = express();
 
-app.use(express.json())
-app.use(cors({
-    origin:"http://localhost:1420"
-}))
+app.use(morgan("dev"));
 
-const PORT = 3001
+app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:1420",
+  })
+);
+
+const PORT = 3001;
 
 app.get("/info", (req, res) => {
-    res.send("version 0.0.1")
-})
+  res.send("version 0.0.1");
+});
 
-app.use(ClientRouter)
+app.use(ClientRouter);
 
 app.listen(PORT, "127.0.0.1", () => {
-    console.log(`servidor rodando na porta ${PORT}`)
-})
+  console.log(`servidor rodando na porta ${PORT}`);
+});

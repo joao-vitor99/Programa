@@ -1,18 +1,24 @@
 import { Button } from "@blueprintjs/core";
 import { createStyleMap } from "../utils";
-import { useState } from "react";
 import { SCREEN_MODE } from "../constants";
+import { useScreen } from "../hooks";
 
 export interface ScreenMenuProps {
-    actions?: {
-      onNewClick?: () => void
-      onEditClick?: () => void
-      onSaveClick?: () => void
-    }
+  screenMode: {
+    screenMode: SCREEN_MODE;
+    setScreenMode: React.Dispatch<React.SetStateAction<SCREEN_MODE>>;
+  };
+  actions?: {
+    onNewClick?: () => void;
+    onEditClick?: () => void;
+    onSaveClick?: () => void;
+  };
 }
 
-export const ScreenMenu = (props:ScreenMenuProps) => {
-  const [screenMode, setScreenMode] = useState<SCREEN_MODE>(SCREEN_MODE.VIEW);
+export const ScreenMenu = (props: ScreenMenuProps) => {
+  const {
+    screenMode: { screenMode, setScreenMode },
+  } = props;
 
   const itemToDelete = null;
   const itemToEdit = null;
@@ -39,8 +45,8 @@ export const ScreenMenu = (props:ScreenMenuProps) => {
         }
         onClick={() => {
           setScreenMode(() => {
-            props?.actions?.onNewClick?.()
-           return SCREEN_MODE.NEW
+            props?.actions?.onNewClick?.();
+            return SCREEN_MODE.NEW;
           });
         }}
       >
@@ -58,8 +64,8 @@ export const ScreenMenu = (props:ScreenMenuProps) => {
         }
         onClick={() => {
           setScreenMode(() => {
-            props?.actions?.onEditClick?.()
-           return SCREEN_MODE.EDIT
+            props?.actions?.onEditClick?.();
+            return SCREEN_MODE.EDIT;
           });
         }}
       >
@@ -73,8 +79,8 @@ export const ScreenMenu = (props:ScreenMenuProps) => {
         disabled={screenMode === SCREEN_MODE.VIEW}
         onClick={() => {
           setScreenMode(() => {
-            props?.actions?.onSaveClick?.()
-           return SCREEN_MODE.VIEW
+            props?.actions?.onSaveClick?.();
+            return SCREEN_MODE.VIEW;
           });
         }}
       >

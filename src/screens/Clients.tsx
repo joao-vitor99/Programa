@@ -1,5 +1,4 @@
-import { CSSProperties, useState } from "react";
-import axios from "axios";
+import { CSSProperties } from "react";
 import { Header } from "../components/Header";
 import { ScreenMenu, ScreenMenuProps } from "../components/ScreenMenu";
 import { Read } from "../components/Clients/Read";
@@ -7,9 +6,13 @@ import { useQuery } from "react-query";
 import { SCREEN_MODE } from "../constants";
 import { Spinner } from "@blueprintjs/core";
 import { Create } from "../components/Clients/Create";
+import { useScreen } from "../hooks";
+import { getClients } from "../queries/client";
 
 export const Clients = () => {
-  const [screenMode, setScreenMode] = useState<SCREEN_MODE>(SCREEN_MODE.VIEW);
+  const {
+    screenMode: { screenMode, setScreenMode },
+  } = useScreen();
 
   const styles = {
     container: {
@@ -19,33 +22,21 @@ export const Clients = () => {
     },
   };
 
-  const getClients = async () => {
-    try {
-      const client = await axios.get("http://localhost:3001/clients");
-      return client;
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const { data, isLoading } = useQuery("Clients", getClients);
 
   const actions: ScreenMenuProps["actions"] = {
-    onNewClick: () => {
-      setScreenMode(SCREEN_MODE.NEW);
-    },
-    onEditClick: () => {
-      setScreenMode(SCREEN_MODE.EDIT);
-    },
-    onSaveClick: () => {
-      setScreenMode(SCREEN_MODE.VIEW);
-    },
+    onNewClick: () => {},
+    onEditClick: () => {},
+    onSaveClick: () => {},
   };
 
   return (
     <div style={styles.container as CSSProperties}>
       <Header title="CLIENTES" />
-      <ScreenMenu actions={actions} />
+      <ScreenMenu
+        screenMode={{ screenMode, setScreenMode }}
+        actions={actions}
+      />
 
       {(() => {
         if (isLoading) {
