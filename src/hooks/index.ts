@@ -1,4 +1,1 @@
-import useScreen from "./useScreen";
-
-export { useScreen };
-
+export{}

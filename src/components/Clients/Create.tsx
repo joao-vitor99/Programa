@@ -1,6 +1,7 @@
-import { InputGroup, Label } from "@blueprintjs/core";
+import { FormGroup } from "@blueprintjs/core";
+import { useFormContext } from "react-hook-form";
 import { createStyleMap } from "../../utils";
-import { useState } from "react";
+import { Input } from "../Input";
 
 export const Create = () => {
   const styles = createStyleMap({
@@ -10,38 +11,24 @@ export const Create = () => {
     },
   });
 
-  const [nome, setNome] = useState<string>();
-  const [telefone, setTelefone] = useState<string>();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
 
   return (
-    <div style={styles.container}>
-      <Label style={{width:"250px"}}>
-        Nome:
-        <InputGroup
-          large
-          placeholder="Nome"
-          fill
-          value={nome}
-          onChange={(event) => {
-            const value = event.target.value;
-            setNome(value);
-          }}
-        />
-      </Label>
+    <form id="create-form" style={styles.container}>
+      <FormGroup
+        style={{ width: "250px" }}
+        label="Nome:"
+        labelInfo="(obrigatório)"
+      >
+        <Input placeholder="Nome" fill {...register("name")} />
+      </FormGroup>
 
-      <Label style={{width:"250px"}}>
-        Telefone:
-        <InputGroup
-          large
-          placeholder="Telefone"
-          fill
-          value={telefone}
-          onChange={(event) => {
-            const value = event.target.value;
-            setTelefone(value);
-          }}
-        />
-      </Label>
-    </div>
+      <FormGroup style={{ width: "250px" }} label="Telefone:">
+        <Input placeholder="Telefone" fill {...register("phone")} />
+      </FormGroup>
+    </form>
   );
 };
