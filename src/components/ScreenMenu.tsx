@@ -62,11 +62,14 @@ export const ScreenMenu = (props: ScreenMenuProps) => {
           screenMode === SCREEN_MODE.NEW ||
           !itemToEdit
         }
-        onClick={() => {
-          setScreenMode(() => {
-            props?.actions?.onEditClick?.();
-            return SCREEN_MODE.EDIT;
-          });
+        onClick={(e) => {
+          e.preventDefault();
+
+          const changeScreenBack = () => {
+            setScreenMode(SCREEN_MODE.EDIT);
+          };
+
+          props?.actions?.onEditClick?.();
         }}
       >
         Editar
@@ -77,11 +80,14 @@ export const ScreenMenu = (props: ScreenMenuProps) => {
         fill
         intent="warning"
         disabled={screenMode === SCREEN_MODE.VIEW}
-        onClick={() => {
-          setScreenMode(() => {
-            props?.actions?.onSaveClick?.();
-            return SCREEN_MODE.VIEW;
-          });
+        onClick={(e) => {
+          e.preventDefault();
+
+          const changeScreenBack = () => {
+            setScreenMode(SCREEN_MODE.VIEW);
+          };
+
+          props?.actions?.onSaveClick?.();
         }}
       >
         Salvar

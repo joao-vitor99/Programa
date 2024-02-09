@@ -62,7 +62,14 @@ export const Home = () => {
             >
               Clientes
             </Button>
-            <Button icon="annotation">Pedidos</Button>
+            <Button
+              icon="annotation"
+              onClick={() => {
+                navigate(ROUTES.HOME);
+              }}
+            >
+              Pedidos
+            </Button>
           </ButtonGroup>
         </div>
       </div>

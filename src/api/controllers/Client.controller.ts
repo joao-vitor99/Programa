@@ -7,7 +7,11 @@ import { clientSchema } from "../schema/Client.schema";
 class ClientControllerKls {
   getClients = async (_req: Request, res: Response) => {
     try {
-      const clients = await db.client.findMany();
+      const clients = await db.client.findMany({
+        orderBy: {
+          id: "desc"
+        }
+      });
 
       return res.status(HttpStatusCode.OK).send(clients)
     } catch (error) {
