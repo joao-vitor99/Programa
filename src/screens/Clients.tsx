@@ -12,20 +12,20 @@ import { createClient, getClients } from "../queries/client";
 import { createStyleMap } from "../utils";
 import DataHeader from "../components/DataHeader";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateUserResolver } from "../resolvers/user.resolver";
+import { CreateClientResolver } from "../resolvers/user.resolver";
 
-type ClientWithoutId = Omit<Client, "id">
+type ClientWithoutId = Omit<Client, "id">;
 
 export const Clients = () => {
   const {
     screenMode: { screenMode, setScreenMode },
   } = useContext(ScreenLocalContext);
 
- useEffect(() => {
-  return () => {
-    setScreenMode(SCREEN_MODE.VIEW)
-  }
- },[])
+  useEffect(() => {
+    return () => {
+      setScreenMode(SCREEN_MODE.VIEW);
+    };
+  }, []);
 
   const { data, isLoading } = useQuery("Clients", getClients);
 
@@ -33,20 +33,30 @@ export const Clients = () => {
     onError: (error) => {},
   });
 
-  const onSave: SubmitHandler<ClientWithoutId> = async (data) => {
-    await mutateAsync(data)
-  };
-
-  const createMethods = useForm<Client>({
-    resolver: zodResolver(CreateUserResolver)
+  const createForm = useForm<Client>({
+    resolver: zodResolver(CreateClientResolver),
   });
 
   const actions: ScreenMenuProps["actions"] = {
-    onNewClick: () => {},
-    onEditClick: () => {},
-    onSaveClick: () => {
-      createMethods.handleSubmit(onSave)();
-      createMethods.reset();
+    onNewClick: (changeScreen) => {
+      changeScreen();
+    },
+    onEditClick: (changeScreen) => {
+      changeScreen();
+    },
+    onSaveClick: (changeScreen) => {
+      const onSave: SubmitHandler<ClientWithoutId> = async (data) => {
+        await mutateAsync(data);
+        createForm.reset();
+
+        changeScreen();
+      };
+
+      createForm.handleSubmit(onSave)();
+    },
+    onCancelClick: (changeScreen) => {
+      createForm.reset()
+      changeScreen();
     },
   };
 
@@ -71,7 +81,7 @@ export const Clients = () => {
       ) : screenMode === SCREEN_MODE.VIEW ? (
         <Read clients={data?.data as Client[]} />
       ) : (
-        <FormProvider {...createMethods}>
+        <FormProvider {...createForm}>
           {screenMode === SCREEN_MODE.NEW ? (
             <Create />
           ) : screenMode === SCREEN_MODE.EDIT ? (

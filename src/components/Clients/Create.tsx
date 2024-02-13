@@ -24,12 +24,22 @@ export const Create = () => {
         label="Nome:"
         labelInfo="(obrigatório)"
       >
-        <Input placeholder="Nome" fill {...register("name")} />
+        <Input
+          placeholder="Nome"
+          fill
+          error={Boolean(errors?.["name"]?.message?.toString())}
+          {...register("name")}
+        />
         <InputError errorMessage={errors?.["name"]?.message?.toString()} />
       </FormGroup>
 
       <FormGroup style={{ width: "250px" }} label="Telefone:">
-        <Input placeholder="Telefone" fill {...register("phone")} />
+        <Input
+          placeholder="Telefone"
+          fill
+          error={Boolean(errors?.["phone"]?.message?.toString())}
+          {...register("phone")}
+        />
         <InputError errorMessage={errors?.["phone"]?.message?.toString()} />
       </FormGroup>
     </form>

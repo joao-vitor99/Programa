@@ -21,7 +21,15 @@ export const CustomTable = <T extends Record<string, any>>({
 
   return (
     <HotkeysProvider>
-      <Table2 numRows={tableData?.length} enableGhostCells>
+      <Table2
+        numRows={tableData?.length}
+        enableGhostCells
+        enableMultipleSelection={false}
+        enableRowHeader={false}
+        selectedRegionTransform={(e) => {
+          return { rows: e.rows };
+        }}
+      >
         {tableHeaders?.map((header) => {
           return (
             <Column

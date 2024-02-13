@@ -1,7 +1,6 @@
 import { Button } from "@blueprintjs/core";
-import { createStyleMap } from "../utils";
 import { SCREEN_MODE } from "../constants";
-import { useScreen } from "../hooks";
+import { createStyleMap } from "../utils";
 
 export interface ScreenMenuProps {
   screenMode: {
@@ -9,9 +8,10 @@ export interface ScreenMenuProps {
     setScreenMode: React.Dispatch<React.SetStateAction<SCREEN_MODE>>;
   };
   actions?: {
-    onNewClick?: () => void;
-    onEditClick?: () => void;
-    onSaveClick?: () => void;
+    onNewClick?: (changeScreen: () => void) => void;
+    onEditClick?: (changeScreen: () => void) => void;
+    onSaveClick?: (changeScreen: () => void) => void;
+    onCancelClick?: (changeScreen: () => void) => void;
   };
 }
 
@@ -44,10 +44,11 @@ export const ScreenMenu = (props: ScreenMenuProps) => {
           screenMode === SCREEN_MODE.EDIT || screenMode === SCREEN_MODE.NEW
         }
         onClick={() => {
-          setScreenMode(() => {
-            props?.actions?.onNewClick?.();
-            return SCREEN_MODE.NEW;
-          });
+          const changeScreen = () => {
+            setScreenMode(SCREEN_MODE.NEW);
+          };
+
+          props?.actions?.onNewClick?.(changeScreen);
         }}
       >
         Novo
@@ -65,11 +66,11 @@ export const ScreenMenu = (props: ScreenMenuProps) => {
         onClick={(e) => {
           e.preventDefault();
 
-          const changeScreenBack = () => {
+          const changeScreen = () => {
             setScreenMode(SCREEN_MODE.EDIT);
           };
 
-          props?.actions?.onEditClick?.();
+          props?.actions?.onEditClick?.(changeScreen);
         }}
       >
         Editar
@@ -83,11 +84,11 @@ export const ScreenMenu = (props: ScreenMenuProps) => {
         onClick={(e) => {
           e.preventDefault();
 
-          const changeScreenBack = () => {
+          const changeScreen = () => {
             setScreenMode(SCREEN_MODE.VIEW);
           };
 
-          props?.actions?.onSaveClick?.();
+          props?.actions?.onSaveClick?.(changeScreen);
         }}
       >
         Salvar
@@ -103,6 +104,22 @@ export const ScreenMenu = (props: ScreenMenuProps) => {
         }}
       >
         Excluir
+      </Button>
+
+      <Button
+        icon="disable"
+        fill
+        intent="none"
+        disabled={screenMode === SCREEN_MODE.VIEW}
+        onClick={() => {
+          const changeScreen = () => {
+            setScreenMode(SCREEN_MODE.VIEW);
+          };
+
+          props?.actions?.onCancelClick?.(changeScreen);
+        }}
+      >
+        Cancelar
       </Button>
     </div>
   );
