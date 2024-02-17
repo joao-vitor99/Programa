@@ -1,5 +1,11 @@
 import { HotkeysProvider } from "@blueprintjs/core";
-import { Cell, Column, ColumnHeaderCell, Table2 } from "@blueprintjs/table";
+import {
+  Cell,
+  Column,
+  ColumnHeaderCell,
+  SelectionModes,
+  Table2,
+} from "@blueprintjs/table";
 
 export interface Table2HeaderType<T extends Record<string, any>> {
   title: string;
@@ -10,6 +16,7 @@ export interface Table2HeaderType<T extends Record<string, any>> {
 export interface Table2Props<T extends Record<string, any>> {
   header: Table2HeaderType<T>[];
   data: T[];
+  onRowClick?: (rowData: T) => void;
 }
 
 export const CustomTable = <T extends Record<string, any>>({
@@ -17,7 +24,7 @@ export const CustomTable = <T extends Record<string, any>>({
 }: {
   data: Table2Props<T>;
 }) => {
-  const { data: tableData, header: tableHeaders } = data;
+  const { data: tableData, header: tableHeaders, onRowClick } = data;
 
   return (
     <HotkeysProvider>
@@ -26,7 +33,12 @@ export const CustomTable = <T extends Record<string, any>>({
         enableGhostCells
         enableMultipleSelection={false}
         enableRowHeader={false}
+        selectionModes={SelectionModes.ROWS_AND_CELLS}
         selectedRegionTransform={(e) => {
+          const index = e.rows?.[0];
+          const rowData = tableData[index!] ?? undefined;
+          onRowClick?.(rowData);
+
           return { rows: e.rows };
         }}
       >
