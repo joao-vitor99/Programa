@@ -3,8 +3,16 @@ import { useFormContext } from "react-hook-form";
 import { createStyleMap } from "../../utils";
 import { Input } from "../Input";
 import InputError from "../InputError";
+import { useContext, useEffect } from "react";
+import { ScreenLocalContext } from "../../context/ScreenLocalContext";
+import { SCREEN_MODE } from "../../constants";
 
-export const Create = () => {
+export const CreateOrEdit = () => {
+  const {
+    screenMode: { screenMode },
+    selectedRow: { selectedRow },
+  } = useContext(ScreenLocalContext);
+
   const styles = createStyleMap({
     container: {
       display: "flex",
@@ -14,8 +22,20 @@ export const Create = () => {
 
   const {
     register,
+    reset,
     formState: { errors },
   } = useFormContext();
+
+  useEffect(() => {
+    const isScreenInEditModeAndHasData =
+      screenMode === SCREEN_MODE.EDIT &&
+      selectedRow !== undefined &&
+      Object.values(selectedRow).length;
+
+    if (isScreenInEditModeAndHasData) {
+      reset(selectedRow);
+    }
+  }, [selectedRow]);
 
   return (
     <form id="create-form" style={styles.container}>

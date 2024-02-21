@@ -33,7 +33,11 @@ export const ScreenMenu = (props: ScreenMenuProps) => {
   // Resetar o item da linha selecionada ao mudar a tela    
 
   useEffect(() => {
-    setSelectedRow(undefined as any);
+    if(screenMode === SCREEN_MODE.EDIT){
+      return
+    }
+
+    setSelectedRow({});
   }, [screenMode]);
 
   const styles = createStyleMap({

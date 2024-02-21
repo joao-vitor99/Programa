@@ -3,12 +3,17 @@ import { Client } from "@prisma/client";
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
-import { Create } from "../components/Clients/Create";
+import { CreateOrEdit } from "../components/Clients/CreateOrEdit";
 import { Read } from "../components/Clients/Read";
 import { ScreenMenuProps } from "../components/ScreenMenu";
 import { SCREEN_MODE } from "../constants";
 import { ScreenLocalContext } from "../context/ScreenLocalContext";
-import { createClient, deleteClient, getClients } from "../queries/client";
+import {
+  createClient,
+  deleteClient,
+  editClient,
+  getClients,
+} from "../queries/client";
 import { createStyleMap } from "../utils";
 import DataHeader from "../components/DataHeader";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,12 +35,6 @@ export const Clients = () => {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  useEffect(() => {
-    return () => {
-      setScreenMode(SCREEN_MODE.VIEW);
-    };
-  }, []);
-
   const { data, isLoading, refetch } = useQuery("Clients", getClients, {
     onError: () => {
       showToast({
@@ -45,45 +44,74 @@ export const Clients = () => {
     },
   });
 
-  const { mutateAsync: createClientMutation } = useMutation("createClient", createClient, {
-    onSuccess: () => {
-      refetch();
-      showToast({
-        message: "Cliente criado com sucesso!",
-        intent: "success",
-      });
-    },
-    onError: () => {
-      showToast({
-        message: "Erro ao criar o cliente",
-        intent: "danger",
-      });
-    },
-  });
+  const { mutateAsync: createClientMutation, isSuccess: createdSuccessfully } =
+    useMutation("createClient", createClient, {
+      onSuccess: () => {
+        refetch();
+        showToast({
+          message: "Cliente criado com sucesso!",
+          intent: "success",
+        });
+      },
+      onError: () => {
+        showToast({
+          message: "Erro ao criar o cliente",
+          intent: "danger",
+        });
+      },
+    });
 
-  const { mutateAsync: deleteClientMutation } = useMutation("deleteClient", deleteClient, {
-    onSuccess: () => {
-      refetch();
-      showToast({
-        message: "Cliente deletado com sucesso!",
-        intent: "success",
-      });
-    },
-    onError: () => {
-      showToast({
-        message: "Erro ao deletar o cliente",
-        intent: "danger",
-      });
-    },
-  });
+  const { mutateAsync: deleteClientMutation } = useMutation(
+    "deleteClient",
+    deleteClient,
+    {
+      onSuccess: () => {
+        refetch();
+        showToast({
+          message: "Cliente deletado com sucesso!",
+          intent: "success",
+        });
+      },
+      onError: () => {
+        showToast({
+          message: "Erro ao deletar o cliente",
+          intent: "danger",
+        });
+      },
+    }
+  );
 
-  const createForm = useForm<Client>({
+  const { mutateAsync: editClientMutation, isSuccess: editedSuccessfully } =
+    useMutation("editClient", editClient, {
+      onSuccess: () => {
+        refetch();
+        showToast({
+          message: "Cliente editado com sucesso!",
+          intent: "success",
+        });
+      },
+      onError: () => {
+        showToast({
+          message: "Erro ao editar o cliente",
+          intent: "danger",
+        });
+      },
+    });
+
+  const form = useForm<Client>({
     resolver: zodResolver(CreateClientResolver),
   });
 
+  useEffect(() => {
+    return () => {
+      setScreenMode(SCREEN_MODE.VIEW);
+      form.reset();
+    };
+  }, []);
+
   const handleDeleteActionButton = async () => {
-    // setSelectedRow(undefined as any);
-    await deleteClientMutation(selectedRow?.id)
+    await deleteClientMutation((selectedRow as Client)?.id);
+    setSelectedRow({});
     setIsDeleteModalOpen(false);
   };
 
@@ -95,17 +123,33 @@ export const Clients = () => {
       changeScreen();
     },
     onSaveClick: (changeScreen) => {
-      const onSave: SubmitHandler<ClientWithoutId> = async (data) => {
+      const onCreate: SubmitHandler<ClientWithoutId> = async (data) => {
         await createClientMutation(data);
-        createForm.reset();
 
-        changeScreen();
+        if (createdSuccessfully) {
+          form.reset();
+          changeScreen();
+        }
       };
 
-      createForm.handleSubmit(onSave)();
+      const onEdit: SubmitHandler<ClientWithoutId> = async (data) => {
+        const { id } = selectedRow as Client;
+
+        await editClientMutation({
+          clientId: id,
+          clientData: data,
+        });
+
+        if (editedSuccessfully) {
+          form.reset();
+          changeScreen();
+        }
+      };
+
+      form.handleSubmit(screenMode === SCREEN_MODE.NEW ? onCreate : onEdit)();
     },
     onCancelClick: (changeScreen) => {
-      createForm.reset();
+      form.reset();
       changeScreen();
     },
     onDeleteClick: () => {
@@ -130,25 +174,22 @@ export const Clients = () => {
           screenMode={{ screenMode, setScreenMode }}
         />
 
-        {isLoading ? (
-          <Spinner size={110} intent="primary" />
-        ) : screenMode === SCREEN_MODE.VIEW ? (
-          <Read
-            clients={data?.data as Client[]}
-            onRowSelect={(data) => {
-              setSelectedRow(data as any);
-            }}
-          />
-        ) : (
-          <FormProvider {...createForm}>
-            {screenMode === SCREEN_MODE.NEW ? (
-              <Create />
-            ) : screenMode === SCREEN_MODE.EDIT ? (
-              <>edit</>
-            ) : null}
-          </FormProvider>
-        )}
+        <FormProvider {...form}>
+          {isLoading ? (
+            <Spinner size={110} intent="primary" />
+          ) : screenMode === SCREEN_MODE.VIEW ? (
+            <Read
+              clients={data?.data as Client[]}
+              onRowSelect={(data) => {
+                setSelectedRow(data as any);
+              }}
+            />
+          ) : (
+            <CreateOrEdit />
+          )}
+        </FormProvider>
       </div>
+
       <DeleteAlertModal
         isOpen={isDeleteModalOpen}
         confirmButtonText="Deletar"
@@ -165,7 +206,7 @@ export const Clients = () => {
         }}
       >
         <p>
-          Deletar o cliente <b>{selectedRow?.name as any}</b> ?
+          Deletar o cliente <b>{(selectedRow as Client)?.name}</b> ?
         </p>
       </DeleteAlertModal>
     </>
