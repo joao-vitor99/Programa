@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 import { HttpStatusCode } from "../../constants";
 import { CreateClientResolver } from "../../resolvers/user.resolver";
@@ -7,8 +7,9 @@ import { db } from "../database/prismaClient";
 import { LOG_LEVEL, logger } from "../../utils";
 
 class ClientControllerKls {
-  getClients = async (_req: Request, res: Response) => {
+  getClients = async (_req: Request, res: Response, next: NextFunction) => {
     // const QTDE_DADOS_PARA_MOSTRAR = 20
+    //
 
     try {
       const clients = await db.client.findMany({
@@ -21,20 +22,11 @@ class ClientControllerKls {
 
       return res.status(HttpStatusCode.OK).send(clients);
     } catch (error) {
-      logger({
-        level: LOG_LEVEL.ERROR,
-        message: "Não foi possivel obter os clientes.",
-        object: String(error),
-      });
-
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: "Não foi possivel obter os clientes.",
-        error: error,
-      });
+      next(error);
     }
   };
 
-  createClient = async (req: Request, res: Response) => {
+  createClient = async (req: Request, res: Response, next: NextFunction) => {
     const clientData: Prisma.ClientCreateInput = req.body;
 
     try {
@@ -52,20 +44,11 @@ class ClientControllerKls {
 
       return res.status(HttpStatusCode.CREATED).send(client);
     } catch (error) {
-      logger({
-        level: LOG_LEVEL.ERROR,
-        message: "Não foi possivel criar o cliente.",
-        object: JSON.stringify(error, null, 2),
-      });
-
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: "Não foi possivel criar o cliente.",
-        error: error,
-      });
+      next(error);
     }
   };
 
-  deleteClient = async (req: Request, res: Response) => {
+  deleteClient = async (req: Request, res: Response, next: NextFunction) => {
     const idAsString = req.params.clientId;
 
     try {
@@ -79,20 +62,11 @@ class ClientControllerKls {
 
       return res.status(HttpStatusCode.OK).send(client);
     } catch (error) {
-      logger({
-        level: LOG_LEVEL.ERROR,
-        message: "Não foi possivel deletar o cliente.",
-        object: JSON.stringify(error, null, 2),
-      });
-
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: "Não foi possivel deletar o cliente.",
-        error: error,
-      });
+      next(error);
     }
   };
 
-  editClient = async (req: Request, res: Response) => {
+  editClient = async (req: Request, res: Response, next: NextFunction) => {
     const clientData: Prisma.ClientCreateInput = req.body;
     const idAsString = req.params.clientId;
 
@@ -116,16 +90,7 @@ class ClientControllerKls {
 
       return res.status(HttpStatusCode.OK).send(client);
     } catch (error) {
-      logger({
-        level: LOG_LEVEL.ERROR,
-        message: "Não foi possivel editar o cliente.",
-        object: JSON.stringify(error, null, 2),
-      });
-
-      return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: "Não foi possivel editar o cliente.",
-        error: error,
-      });
+      next(error);
     }
   };
 }
