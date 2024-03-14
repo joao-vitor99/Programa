@@ -4,6 +4,7 @@ import { Home } from "./screens/Home";
 import { Clients } from "./screens/Clients";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { Orders } from "./screens/Orders";
 
 function App() {
   const queryClient = new QueryClient();
@@ -16,6 +17,10 @@ function App() {
         {
           path: ROUTES.CLIENTS,
           element: <Clients />,
+        },
+        {
+          path: ROUTES.ORDERS,
+          element: <Orders />,
         },
       ],
     },

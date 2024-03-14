@@ -62,10 +62,16 @@ export const Home = () => {
             >
               Clientes
             </Button>
+
             <Button
+              intent={
+                isCurrentScreenSelected(ROUTES.ORDERS, location.pathname)
+                  ? "primary"
+                  : "none"
+              }
               icon="annotation"
               onClick={() => {
-                navigate(ROUTES.HOME);
+                navigate(ROUTES.ORDERS);
               }}
             >
               Pedidos
