@@ -1,28 +1,25 @@
-import { createStyleMap } from "../utils";
 import { Header } from "./Header";
 import { ScreenMenu, ScreenMenuProps } from "./ScreenMenu";
 
 interface DataHeaderProps {
   title: string;
-  actions: ScreenMenuProps["actions"];
-  screenMode: ScreenMenuProps["screenMode"];
+  menuProps?: {
+    actions: ScreenMenuProps["actions"];
+    screenMode: ScreenMenuProps["screenMode"];
+  };
 }
 
 const DataHeader = (props: DataHeaderProps) => {
-  const styles = createStyleMap({
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-      gap: "0.5rem",
-      paddingBottom: "1rem",
-    },
-  });
-
   return (
-    <div style={styles.container}>
+    <div className="flex flex-col w-full gap-2 pb-4">
       <Header title={props.title} />
-      <ScreenMenu actions={props.actions} screenMode={props.screenMode} />
+
+      {props.menuProps !== undefined ? (
+        <ScreenMenu
+          actions={props.menuProps.actions}
+          screenMode={props.menuProps.screenMode}
+        />
+      ) : null}
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import { FormGroup } from "@blueprintjs/core";
 import { useFormContext } from "react-hook-form";
-import { createStyleMap } from "../../utils";
 import { Input } from "../Input";
 import InputError from "../InputError";
 import { useContext, useEffect } from "react";
@@ -12,13 +11,6 @@ export const CreateOrEdit = () => {
     screenMode: { screenMode },
     selectedRow: { selectedRow },
   } = useContext(ScreenLocalContext);
-
-  const styles = createStyleMap({
-    container: {
-      display: "flex",
-      gap: "0.5rem",
-    },
-  });
 
   const {
     register,
@@ -38,7 +30,7 @@ export const CreateOrEdit = () => {
   }, [selectedRow]);
 
   return (
-    <form id="create-form" style={styles.container}>
+    <form id="create-form" className={"flex gap-4"}>
       <FormGroup
         style={{ width: "250px" }}
         label="Nome:"

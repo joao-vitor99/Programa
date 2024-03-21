@@ -1,11 +1,15 @@
 import { Spinner, ToastProps } from "@blueprintjs/core";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Client } from "@prisma/client";
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery } from "react-query";
+import DeleteAlertModal from "../components/AlertModal";
 import { CreateOrEdit } from "../components/Clients/CreateOrEdit";
 import { Read } from "../components/Clients/Read";
+import DataHeader from "../components/DataHeader";
 import { ScreenMenuProps } from "../components/ScreenMenu";
+import { AppToaster } from "../config/toast";
 import { SCREEN_MODE } from "../constants";
 import { ScreenLocalContext } from "../context/ScreenLocalContext";
 import {
@@ -14,12 +18,7 @@ import {
   editClient,
   getClients,
 } from "../queries/client";
-import { createStyleMap } from "../utils";
-import DataHeader from "../components/DataHeader";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateClientResolver } from "../resolvers/user.resolver";
-import { AppToaster } from "../config/toast";
-import DeleteAlertModal from "../components/AlertModal";
 
 type ClientWithoutId = Omit<Client, "id">;
 
@@ -33,13 +32,14 @@ export const Clients = () => {
     (await AppToaster).show(props);
   };
 
+  // TODO - refactor opening logic, encapsulate the logic on the component itself
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const { data, isLoading, refetch } = useQuery("Clients", getClients, {
+  const { isLoading, data, refetch } = useQuery("clients", getClients, {
     onError: () => {
       showToast({
-        message: "Erro ao obter os clientes!",
-        intent: "success",
+        message: "Erro ao obter os clientes",
+        intent: "danger",
       });
     },
   });
@@ -68,7 +68,7 @@ export const Clients = () => {
       onSuccess: () => {
         refetch();
         showToast({
-          message: "Cliente deletado com sucesso!",
+          message: "Cliente deletado!",
           intent: "success",
         });
       },
@@ -98,10 +98,11 @@ export const Clients = () => {
       },
     });
 
-  const form = useForm<Client>({
+  const form = useForm<ClientWithoutId>({
     resolver: zodResolver(CreateClientResolver),
   });
 
+  // Reset SCREEN_MODE and form when changing screens
   useEffect(() => {
     return () => {
       setScreenMode(SCREEN_MODE.VIEW);
@@ -148,30 +149,25 @@ export const Clients = () => {
 
       form.handleSubmit(screenMode === SCREEN_MODE.NEW ? onCreate : onEdit)();
     },
-    onCancelClick: (changeScreen) => {
-      form.reset();
-      changeScreen();
-    },
     onDeleteClick: () => {
       setIsDeleteModalOpen(true);
     },
-  };
-
-  const styles = createStyleMap({
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "0.5rem",
+    onCancelClick: (changeScreen) => {
+      form.reset();
+      setSelectedRow({});
+      changeScreen();
     },
-  });
+  };
 
   return (
     <>
-      <div style={styles.container}>
+      <div className="flex flex-col gap-2">
         <DataHeader
           title="CLIENTES"
-          actions={actions}
-          screenMode={{ screenMode, setScreenMode }}
+          menuProps={{
+            actions,
+            screenMode: { screenMode, setScreenMode },
+          }}
         />
 
         <FormProvider {...form}>
@@ -181,7 +177,7 @@ export const Clients = () => {
             <Read
               clients={data?.data as Client[]}
               onRowSelect={(data) => {
-                setSelectedRow(data as any);
+                setSelectedRow(data as Client);
               }}
             />
           ) : (
@@ -198,6 +194,7 @@ export const Clients = () => {
         intent="danger"
         actions={{
           onCancel: () => {
+            setSelectedRow({});
             setIsDeleteModalOpen(false);
           },
           onConfirm: () => {

@@ -1,22 +1,11 @@
-import { createStyleMap } from "../utils"
-import { Colors } from "@blueprintjs/core"
-
-interface HeaderProps{
-    title:string
+interface HeaderProps {
+  title: string;
 }
 
-export const Header = (props:HeaderProps) => {
-    const styles=createStyleMap({
-        container: {
-            display: "flex",
-            paddingBottom: "2px",
-            borderBottom: `2px solid ${Colors.GRAY2}`
-        }
-    })
-    
-    return(
-        <div style={styles.container}>
-            <h1>{props.title}</h1>
-        </div>
-    )
-}
+export const Header = (props: HeaderProps) => {
+  return (
+    <div className="flex pb-2 border-b-2 border-0 border-solid border-gray2">
+      <h1 className="text-4xl font-bold">{props.title}</h1>
+    </div>
+  );
+};

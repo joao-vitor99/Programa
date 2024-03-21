@@ -1,6 +1,5 @@
 import { Button } from "@blueprintjs/core";
 import { SCREEN_MODE } from "../constants";
-import { createStyleMap } from "../utils";
 import { useContext, useEffect } from "react";
 import { ScreenLocalContext } from "../context/ScreenLocalContext";
 
@@ -30,29 +29,18 @@ export const ScreenMenu = (props: ScreenMenuProps) => {
   const selectedItem =
     selectedRow !== undefined && Object.values(selectedRow)?.length;
 
-  // Resetar o item da linha selecionada ao mudar a tela    
+  // Resetar o item da linha selecionada ao mudar a tela
 
   useEffect(() => {
-    if(screenMode === SCREEN_MODE.EDIT){
-      return
+    if (screenMode === SCREEN_MODE.EDIT) {
+      return;
     }
 
     setSelectedRow({});
   }, [screenMode]);
 
-  const styles = createStyleMap({
-    container: {
-      backgroundColor: "#fff",
-      border: "1px solid #D3D8DE",
-      borderRadius: "4px",
-      padding: "2px",
-      display: "flex",
-      gap: "1rem",
-    },
-  });
-
   return (
-    <div style={styles.container}>
+    <div className="bg-white  p-1 flex justify-between gap-4 border border-lightgray border-solid rounded">
       <Button
         icon="plus"
         fill

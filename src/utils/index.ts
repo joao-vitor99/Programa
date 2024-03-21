@@ -1,11 +1,9 @@
-import { CSSProperties } from "react";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 import { logger, LOG_LEVEL } from "./logger";
 import { parseEnv } from "./parseEnv";
 
-export function createStyleMap<T extends { [name: string]: CSSProperties }>(
-  cfg: T
-) {
-  return cfg;
-}
 
-export { logger, LOG_LEVEL, parseEnv };
+const cn = (...args: ClassValue[]) => twMerge(clsx(args));
+
+export { logger, LOG_LEVEL, parseEnv, cn };
